@@ -1,0 +1,36 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: nginix-statefulset
+  namespace: prod
+spec:
+  serviceName: "nginix-service"
+  replicas: 1
+  selector:
+    matchLabels:
+      app: nginix-app
+  template:
+    metadata:
+      labels:
+        app: nginix-app
+    spec:
+      containers:
+      - name: nginix-app
+        image: nginx:latest
+        ports:
+        - containerPort: 80
+        volumeMounts:
+        - name: nginix-pvc
+          mountPath: /data
+  volumeClaimTemplates:
+  - metadata:
+      name: nginix-pvc
+      annotations:
+        storageclass.kubernetes.io/is-default-class: "true"
+    spec:
+      accessModes:
+        - ReadWriteOnce
+      resources:
+        requests:
+          storage: 5Gi
+      storageClassName: gp2

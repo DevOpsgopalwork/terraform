@@ -1,0 +1,32 @@
+apiVersion: install.istio.io/v1alpha1
+kind: IstioOperator
+metadata:
+  namespace: istio-system
+spec:
+  values:
+    pilot:
+      traceSampling: 10.0
+  meshConfig:
+    accessLogFile: /dev/stdout
+    enableTracing: true
+  components:
+    pilot:
+      k8s:
+        resources:
+          requests:
+            cpu: 50m # override from default 500m
+            memory: 210Mi # ... default 2048Mi
+        hpaSpec:
+          maxReplicas: 5 # ... default 5
+          minReplicas: 1  # ... default 1
+    ingressGateways:
+      - name: istio-ingressgateway
+        enabled: true
+        k8s:
+          resources:
+            requests:
+              cpu: 120m
+              memory: 130Mi
+          hpaSpec:
+            maxReplicas: 6 # ... default 5
+            minReplicas: 2  # ... default 1
